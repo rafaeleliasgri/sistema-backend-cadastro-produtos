@@ -1,3 +1,5 @@
+/* Este código define a entidade Usuário. */
+
 namespace Controllers.Entities
 {
     public class Usuario
@@ -17,6 +19,5 @@ namespace Controllers.Entities
         public string? Genero { get; set; }
 
         public string? Senha { get; set; }
-
     }
 }

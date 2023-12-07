@@ -1,3 +1,5 @@
+/* Este código envia e-mail. */
+
 using System.Net;
 using System.Net.Mail;
 
@@ -7,15 +9,15 @@ namespace Controllers.Common
     {
         public void EnviarEmail(string assunto, string corpo, string toEmail)
         {
-            //dispara email
             var fromEmail = "robertpaulson241@zohomail.com";
             var fromPassword = "Paulson241@";
             var fromHost = "smtp.zoho.com";
             var fromPort = 587;
 
-            MailMessage mail = new MailMessage();
-
-            mail.From = new MailAddress(fromEmail);
+            MailMessage mail = new()
+            {
+                From = new MailAddress(fromEmail)
+            };
 
             mail.To.Add(new MailAddress(toEmail));
 
@@ -23,18 +25,17 @@ namespace Controllers.Common
 
             mail.Body = corpo;
 
-            using (SmtpClient smtp = new SmtpClient(fromHost, fromPort))
-            {
-                smtp.UseDefaultCredentials = false;
-                
-                smtp.Credentials = new NetworkCredential(fromEmail, fromPassword);
+            using SmtpClient smtp = new(fromHost, fromPort);
 
-                smtp.EnableSsl = true;
+            smtp.UseDefaultCredentials = false;
 
-                smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+            smtp.Credentials = new NetworkCredential(fromEmail, fromPassword);
 
-                smtp.Send(mail);
-            }          
+            smtp.EnableSsl = true;
+
+            smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+
+            smtp.Send(mail);
         }
     }
 }

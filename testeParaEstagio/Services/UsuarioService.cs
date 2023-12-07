@@ -1,10 +1,11 @@
-using System.Linq.Expressions;
+/* Este código executa validações, chamadas ao UsuarioRepositorio,
+ao EmailSender e retorna resultados ao UsuarioController para operações de Login,  
+cadastro de usuário, de produto, esqueceu senha, e obter usuário. */
+
 using Controllers.Common;
 using Controllers.Entities;
 using Controllers.Models;
 using Controllers.Repositories;
-using MySqlX.XDevAPI.Common;
-using Org.BouncyCastle.Asn1.Misc;
 
 namespace Controllers.Services
 {
@@ -24,7 +25,7 @@ namespace Controllers.Services
             if (usuarioExistente == null)
             {
                 result.Sucesso = false;
-                result.Mensagem = "Usuário ou senha Inválidos.";
+                result.Mensagem = $"Usuário ou senha Inválidos.";
             }
             else
             {
@@ -34,13 +35,13 @@ namespace Controllers.Services
                     // a senha é válida;
                     result.Sucesso = true;
                     result.UsuarioGuid = usuarioExistente.UsuarioGuid;
-                    result.Mensagem = "Você Logou!";
+                    result.Mensagem = $"Você Logou!";
                 }
                 else
                 {
                     // a senha é inválida;
                     result.Sucesso = false;
-                    result.Mensagem = "Usuário ou senha Inválidos";
+                    result.Mensagem = $"Usuário ou senha Inválidos";
                 }
             }
 
@@ -60,21 +61,21 @@ namespace Controllers.Services
             {
                 // o usuário já existe;
                 result.Sucesso = false;
-                result.Mensagem = "Usuário já existe no sistema";
+                result.Mensagem = $"Usuário já existe no sistema";
             }
-
             else
             {
                 // o usuário não existe;
-                var user = new Usuario();
-
-                user.Nome = nome;
-                user.Sobrenome = sobrenome;
-                user.Telefone = telefone;
-                user.Email = email;
-                user.Genero = genero;
-                user.Senha = senha;
-                user.UsuarioGuid = Guid.NewGuid();
+                var user = new Usuario
+                {
+                    Nome = nome,
+                    Sobrenome = sobrenome,
+                    Telefone = telefone,
+                    Email = email,
+                    Genero = genero,
+                    Senha = senha,
+                    UsuarioGuid = Guid.NewGuid()
+                };
 
                 var affectedRows = repositorio.InserirUsuario(user);
 
@@ -82,59 +83,55 @@ namespace Controllers.Services
                 {
                     result.Sucesso = true;
                     result.UsuarioGuid = user.UsuarioGuid;
-                    result.Mensagem = "Usuário cadastrado com Sucesso!";
+                    result.Mensagem = $"Usuário cadastrado com Sucesso!";
                 }
-
                 else
                 {
                     result.Sucesso = false;
-                    result.Mensagem = "Não foi possível inserir o usuário.";
+                    result.Mensagem = $"Não foi possível inserir o usuário.";
                 }
             }
 
             return result;
         }
 
-        public CadastroProdutoResult CadastroProduto(string NomeProd, string CodProd, string PrecProd,
- string quantEstoque)
+        public CadastroProdutoResult CadastroProduto(string NomeProduto, string CodigoProduto, string PrecoProduto,
+ string quantidadeEstoque)
         {
             var result = new CadastroProdutoResult();
-
             var repositorio = new UsuarioRepository(_connectionString);
-
-            var produto = repositorio.ObterProdutoPorCodigo(CodProd);
+            var produto = repositorio.ObterProdutoPorCodigo(CodigoProduto);
 
             if (produto != null)
             {
                 // o produto já existe;
                 result.Sucesso = false;
-                result.Mensagem = "Produto já existe no sistema";
+                result.Mensagem = $"Produto já existe no sistema";
             }
-
             else
             {
                 // o produto não existe;
-                var user = new Produto();
-
-                user.NomeProd = NomeProd;
-                user.CodProd = CodProd;
-                user.PrecProd = PrecProd;
-                user.QuantEstoque = quantEstoque;
-                user.ProdGuid = Guid.NewGuid();
+                var user = new Produto
+                {
+                    NomeProduto = NomeProduto,
+                    CodigoProduto = CodigoProduto,
+                    PrecoProduto = PrecoProduto,
+                    QuantidadeEstoque = quantidadeEstoque,
+                    ProdutoGuid = Guid.NewGuid()
+                };
 
                 var affectedRows = repositorio.InserirProduto(user);
 
                 if (affectedRows > 0)
                 {
                     result.Sucesso = true;
-                    result.ProdGuid = user.ProdGuid;
-                    result.Mensagem = "Produto cadastrado com Sucesso!";
+                    result.ProdutoGuid = user.ProdutoGuid;
+                    result.Mensagem = $"Produto cadastrado com Sucesso!";
                 }
-
                 else
                 {
                     result.Sucesso = false;
-                    result.Mensagem = "Não foi possível inserir o produto.";
+                    result.Mensagem = $"Não foi possível inserir o produto.";
                 }
             }
 
@@ -143,34 +140,26 @@ namespace Controllers.Services
 
         public EsqueceuSenhaResult Esqueceusenha(string email)
         {
-            //var mensagem = string.Empty;
-
             var result = new EsqueceuSenhaResult();
-
             var usuarioExistente = new UsuarioRepository(_connectionString).ObterUsuarioPorEmail(email);
 
             if (usuarioExistente == null)
             {
                 result.Sucesso = false;
-                result.Mensagem = "Usuário não existe";
+                result.Mensagem = $"Usuário não existe.";
             }
             else
             {
-
-                var assunto = "Programação do Zero - Recuperação de Senha";
-
-                var corpo = "Sua senha de acesso é: " + usuarioExistente.Senha;
-
+                var assunto = $"Programação do Zero - Recuperação de Senha";
+                var corpo = $"Sua senha de acesso é: {usuarioExistente.Senha}";
                 var emailSender = new EmailSender();
 
                 emailSender.EnviarEmail(assunto, corpo, usuarioExistente.Email);
 
                 result.Sucesso = true;
-
             }
 
             return result;
-
         }
 
         public Usuario ObterUsuario(Guid usuarioGuid)

@@ -1,3 +1,13 @@
+/* Este código é um controlador de recebimento de mensagem em formato
+JSON e envio de resposta também em formato JSON (login, cadastroUsuário 
+CadastroProduto, esqueceuSenha, obterUsuario). Após as validações 
+executadas, envolvem-se os modelos Request e Result respectivos.
+Então o código UsuarioService é acionado. Este, por sua vez,
+aciona o código UsuárioRepositorio. Este, após as tratativas, 
+retorna resultado para o UsuarioService que, por sua vez, 
+retorna resultado para este código, que retorna resposta (Result respectiva).*/
+
+
 using Controllers.Models;
 using Controllers.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -25,17 +35,17 @@ public class UsuarioController : ControllerBase
         if (request == null)
         {
             result.Sucesso = false;
-            result.Mensagem = "Parâmetro request veio nulo.";
+            result.Mensagem = $"Parâmetro request veio nulo.";
         }
         else if (request.Email == "")
         {
             result.Sucesso = false;
-            result.Mensagem = "E-mail Obrigatório";
+            result.Mensagem = $"E-mail Obrigatório";
         }
         else if (request.Senha == "")
         {
             result.Sucesso = false;
-            result.Mensagem = "Senha obrigatória";
+            result.Mensagem = $"Senha obrigatória";
         }
         else
         {
@@ -63,8 +73,7 @@ public class UsuarioController : ControllerBase
         string.IsNullOrEmpty(request.Email) ||
         string.IsNullOrEmpty(request.Senha))
         {
-            result.Mensagem = "Todos os campos são obrigatórios";
-
+            result.Mensagem = $"Todos os campos são obrigatórios";
         }
         else
         {
@@ -78,11 +87,9 @@ public class UsuarioController : ControllerBase
              request.Telefone,
              request.Email,
              request.Genero, request.Senha);
-
         }
 
         return result;
-
     }
 
     [HttpPost]
@@ -92,30 +99,26 @@ public class UsuarioController : ControllerBase
         var result = new CadastroProdutoResult();
 
         if (request == null ||
-        string.IsNullOrEmpty(request.NomeProd) ||
-        string.IsNullOrEmpty(request.CodProd) ||
-        string.IsNullOrEmpty(request.PrecProd) ||
-        string.IsNullOrEmpty(request.QuantEstoque))
+        string.IsNullOrEmpty(request.NomeProduto) ||
+        string.IsNullOrEmpty(request.CodigoProduto) ||
+        string.IsNullOrEmpty(request.PrecoProduto) ||
+        string.IsNullOrEmpty(request.QuantidadeEstoque))
         {
-            result.Mensagem = "Todos os campos são obrigatórios";
-
+            result.Mensagem = $"Todos os campos são obrigatórios";
         }
         else
         {
             var connectionString = _configuration.GetConnectionString("testeParaEstagioDb");
-
             var usuarioService = new UsuarioService(connectionString);
 
             result = usuarioService.CadastroProduto
-            (request.NomeProd,
-             request.CodProd,
-             request.PrecProd,
-             request.QuantEstoque);
-
+            (request.NomeProduto,
+             request.CodigoProduto,
+             request.PrecoProduto,
+             request.QuantidadeEstoque);
         }
 
         return result;
-
     }
 
     [HttpPost]
@@ -127,7 +130,7 @@ public class UsuarioController : ControllerBase
         if (request == null ||
         string.IsNullOrEmpty(request.Email))
         {
-            result.Mensagem = "E-mail obrigatório";
+            result.Mensagem = $"E-mail obrigatório";
 
             return result;
         }
@@ -148,7 +151,7 @@ public class UsuarioController : ControllerBase
 
         if (usuarioGuid == null)
         {
-            result.Mensagem = "Guid vazio!";
+            result.Mensagem = $"Guid vazio!";
         }
         else
         {
@@ -158,13 +161,13 @@ public class UsuarioController : ControllerBase
 
             if (usuario == null)
             {
-                result.Mensagem = "Usuário não existe!";
+                result.Mensagem = $"Usuário não existe!";
             }
             else
             {
                 result.Sucesso = true;
-                result.nome = usuario.Nome;
-                result.Mensagem = "Usuário " + usuario.Nome + " encontrado com Sucesso!";
+                result.Nome = usuario.Nome;
+                result.Mensagem = $"Usuário {usuario.Nome} encontrado com Sucesso!";
             }
         }
 

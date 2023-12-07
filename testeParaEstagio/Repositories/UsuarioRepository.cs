@@ -1,3 +1,7 @@
+/* Este código executa inserções de novos: Usuário, Produto na
+tabela MySQL-Server. Também obtém da tabela: usuário por email,
+por Guid e produto por código. Retorna resultados ao UsuarioService. */
+
 using Controllers.Entities;
 using MySql.Data.MySqlClient;
 
@@ -15,14 +19,15 @@ namespace Controllers.Repositories
         public int InserirUsuario(Usuario usuario)
         {
             var cnn = new MySqlConnection(_connectionString);
+            var cmd = new MySqlCommand
+            {
+                Connection = cnn,
 
-            var cmd = new MySqlCommand();
-            cmd.Connection = cnn;
-
-            cmd.CommandText = @"INSERT INTO usuario
+                CommandText = @"INSERT INTO usuario
                 (nome, sobrenome, telefone, email, genero, senha, usuarioGuid)
                 VALUES
-                (@nome, @sobrenome, @telefone, @email, @genero, @senha, @usuarioGuid)";
+                (@nome, @sobrenome, @telefone, @email, @genero, @senha, @usuarioGuid)"
+            };
 
             cmd.Parameters.AddWithValue("nome", usuario.Nome);
             cmd.Parameters.AddWithValue("sobrenome", usuario.Sobrenome);
@@ -44,12 +49,15 @@ namespace Controllers.Repositories
         public Usuario ObterUsuarioPorEmail(string email)
         {
             Usuario usuario = null;
-            MySqlConnection cnn = new MySqlConnection(_connectionString);
 
-            MySqlCommand cmd = new MySqlCommand();
-            cmd.Connection = cnn;
+            MySqlConnection cnn = new(_connectionString);
 
-            cmd.CommandText = "SELECT * FROM usuario WHERE email= @email";
+            MySqlCommand cmd = new()
+            {
+                Connection = cnn,
+
+                CommandText = "SELECT * FROM usuario WHERE email= @email"
+            };
 
             cmd.Parameters.AddWithValue("email", email);
 
@@ -59,14 +67,16 @@ namespace Controllers.Repositories
 
             if (reader.Read())
             {
-                usuario = new Usuario();
-                usuario.Nome = reader["nome"].ToString();
-                usuario.Sobrenome = reader["sobrenome"].ToString();
-                usuario.Telefone = reader["telefone"].ToString();
-                usuario.Email = reader["email"].ToString();
-                usuario.Genero = reader["genero"].ToString();
-                usuario.Senha = reader["senha"].ToString();
-                usuario.UsuarioGuid = new Guid(reader["usuarioGuid"].ToString());
+                usuario = new Usuario
+                {
+                    Nome = reader["nome"].ToString(),
+                    Sobrenome = reader["sobrenome"].ToString(),
+                    Telefone = reader["telefone"].ToString(),
+                    Email = reader["email"].ToString(),
+                    Genero = reader["genero"].ToString(),
+                    Senha = reader["senha"].ToString(),
+                    UsuarioGuid = new Guid(reader["usuarioGuid"].ToString())
+                };
             }
 
             return usuario;
@@ -77,11 +87,12 @@ namespace Controllers.Repositories
             Usuario usuario = null;
 
             var cnn = new MySqlConnection(_connectionString);
+            var cmd = new MySqlCommand
+            {
+                Connection = cnn,
 
-            var cmd = new MySqlCommand();
-            cmd.Connection = cnn;
-
-            cmd.CommandText = "SELECT * FROM usuario WHERE usuarioGuid = @usuarioGuid";
+                CommandText = "SELECT * FROM usuario WHERE usuarioGuid = @usuarioGuid"
+            };
 
             cmd.Parameters.AddWithValue("usuarioGuid", usuarioGuid);
 
@@ -91,15 +102,16 @@ namespace Controllers.Repositories
 
             if (reader.Read())
             {
-                usuario = new Usuario();
-                usuario = new Usuario();
-                usuario.Nome = reader["nome"].ToString();
-                usuario.Sobrenome = reader["sobrenome"].ToString();
-                usuario.Telefone = reader["telefone"].ToString();
-                usuario.Email = reader["email"].ToString();
-                usuario.Genero = reader["genero"].ToString();
-                usuario.Senha = reader["senha"].ToString();
-                usuario.UsuarioGuid = new Guid(reader["usuarioGuid"].ToString());
+                usuario = new Usuario
+                {
+                    Nome = reader["nome"].ToString(),
+                    Sobrenome = reader["sobrenome"].ToString(),
+                    Telefone = reader["telefone"].ToString(),
+                    Email = reader["email"].ToString(),
+                    Genero = reader["genero"].ToString(),
+                    Senha = reader["senha"].ToString(),
+                    UsuarioGuid = new Guid(reader["usuarioGuid"].ToString())
+                };
             }
 
             cnn.Close();
@@ -110,20 +122,19 @@ namespace Controllers.Repositories
         public int InserirProduto(Produto produto)
         {
             var cnn = new MySqlConnection(_connectionString);
-
-            var cmd = new MySqlCommand();
-            cmd.Connection = cnn;
-
-            cmd.CommandText = @"INSERT INTO produto
-                (nomeProduto, codigoProduto, precoProduto, quantEstoque, prodGuid)
+            var cmd = new MySqlCommand
+            {
+                Connection = cnn,
+                CommandText = @"INSERT INTO produto
+                (nomeProduto, codigoProduto, precoProduto, quantidadeEstoque, produtoGuid)
                 VALUES
-                (@nomeProduto, @codigoProduto, @precoProduto, @quantEstoque, @prodGuid)";
-
-            cmd.Parameters.AddWithValue("nomeProduto", produto.NomeProd);
-            cmd.Parameters.AddWithValue("codigoProduto", produto.CodProd);
-            cmd.Parameters.AddWithValue("precoProduto", produto.PrecProd);
-            cmd.Parameters.AddWithValue("quantEstoque", produto.QuantEstoque);
-            cmd.Parameters.AddWithValue("prodGuid", produto.ProdGuid);
+                (@nomeProduto, @codigoProduto, @precoProduto, @quantidadeEstoque, @produtoGuid)"
+            };
+            cmd.Parameters.AddWithValue("nomeProduto", produto.NomeProduto);
+            cmd.Parameters.AddWithValue("codigoProduto", produto.CodigoProduto);
+            cmd.Parameters.AddWithValue("precoProduto", produto.PrecoProduto);
+            cmd.Parameters.AddWithValue("quantidadeEstoque", produto.QuantidadeEstoque);
+            cmd.Parameters.AddWithValue("produtoGuid", produto.ProdutoGuid);
 
             cnn.Open();
 
@@ -134,17 +145,20 @@ namespace Controllers.Repositories
             return affectedRows;
         }
 
-        public Produto ObterProdutoPorCodigo(string CodProd)
+        public Produto ObterProdutoPorCodigo(string CodigoProduto)
         {
             Produto produto = null;
-            MySqlConnection cnn = new MySqlConnection(_connectionString);
 
-            MySqlCommand cmd = new MySqlCommand();
-            cmd.Connection = cnn;
+            MySqlConnection cnn = new(_connectionString);
 
-            cmd.CommandText = "SELECT * FROM produto WHERE codigoProduto = @codigoProduto";
+            MySqlCommand cmd = new()
+            {
+                Connection = cnn,
 
-            cmd.Parameters.AddWithValue("codigoProduto", CodProd);
+                CommandText = "SELECT * FROM produto WHERE codigoProduto = @codigoProduto"
+            };
+
+            cmd.Parameters.AddWithValue("codigoProduto", CodigoProduto);
 
             cnn.Open();
 
@@ -152,16 +166,17 @@ namespace Controllers.Repositories
 
             if (reader.Read())
             {
-                produto = new Produto();
-                produto.NomeProd = reader["nomeProduto"].ToString();
-                produto.CodProd = reader["codigoProduto"].ToString();
-                produto.PrecProd = reader["precoProduto"].ToString();
-                produto.QuantEstoque = reader["quantEstoque"].ToString();
-                produto.ProdGuid = new Guid(reader["prodGuid"].ToString());
+                produto = new Produto
+                {
+                    NomeProduto = reader["nomeProduto"].ToString(),
+                    CodigoProduto = reader["codigoProduto"].ToString(),
+                    PrecoProduto = reader["precoProduto"].ToString(),
+                    QuantidadeEstoque = reader["quantidadeEstoque"].ToString(),
+                    ProdutoGuid = new Guid(reader["produtoGuid"].ToString())
+                };
             }
 
             return produto;
         }
-
     }
 }

@@ -82,6 +82,9 @@ DELETE FROM usuario WHERE id > 2;
 --9.3 Apagar tudo da tabela (ex. tabela usuario)
 DELETE FROM usuario WHERE id > 0;
 
+/* To rename a column in MySQL the following syntax is used:*/
+ALTER TABLE produto RENAME COLUMN quantEstoque TO quantidadeEstoque;
+
 
 
 

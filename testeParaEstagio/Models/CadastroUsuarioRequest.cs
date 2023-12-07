@@ -1,4 +1,7 @@
-namespace Controllers.Models 
+/* Este código estabelece o que é captado como entrada (request) 
+à chamada de Cadastro de Usuário. */
+
+namespace Controllers.Models
 {
     public class CadastroUsuarioRequest
     {
@@ -12,7 +15,7 @@ namespace Controllers.Models
 
         public string? Senha { get; set; }
 
-        public string? Genero { get; set; } 
+        public string? Genero { get; set; }
 
     }
 }
