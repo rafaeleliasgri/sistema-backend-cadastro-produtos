@@ -1,6 +1,6 @@
 /* Este código é um controlador de recebimento de mensagem em formato
-JSON e envio de resposta também em formato JSON (login, cadastroUsuário 
-CadastroProduto, esqueceuSenha, obterUsuario). Após as validações 
+JSON e envio de resposta também em formato JSON (login, cadastroUsuário, 
+esqueceuSenha, obterUsuario). Após as validações 
 executadas, envolvem-se os modelos Request e Result respectivos.
 Então o código UsuarioService é acionado. Este, por sua vez,
 aciona o código UsuárioRepositorio. Este, após as tratativas, 
@@ -93,35 +93,6 @@ public class UsuarioController : ControllerBase
     }
 
     [HttpPost]
-    [Route("CadastroProduto")]
-    public CadastroProdutoResult CadastroProduto(CadastroProdutoRequest request)
-    {
-        var result = new CadastroProdutoResult();
-
-        if (request == null ||
-        string.IsNullOrEmpty(request.NomeProduto) ||
-        string.IsNullOrEmpty(request.CodigoProduto) ||
-        string.IsNullOrEmpty(request.PrecoProduto) ||
-        string.IsNullOrEmpty(request.QuantidadeEstoque))
-        {
-            result.Mensagem = $"Todos os campos são obrigatórios";
-        }
-        else
-        {
-            var connectionString = _configuration.GetConnectionString("testeParaEstagioDb");
-            var usuarioService = new UsuarioService(connectionString);
-
-            result = usuarioService.CadastroProduto
-            (request.NomeProduto,
-             request.CodigoProduto,
-             request.PrecoProduto,
-             request.QuantidadeEstoque);
-        }
-
-        return result;
-    }
-
-    [HttpPost]
     [Route("EsqueceuSenha")]
     public EsqueceuSenhaResult EsqueceuSenha(EsqueceuSenhaRequest request)
     {
@@ -141,7 +112,6 @@ public class UsuarioController : ControllerBase
 
         return result;
     }
-
 
     [HttpGet]
     [Route("obterusuario")]

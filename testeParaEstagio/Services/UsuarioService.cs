@@ -1,6 +1,6 @@
-/* Este código executa validações, chamadas ao UsuarioRepositorio,
+/* Este código executa validações, chamadas ao UsuarioRepository,
 ao EmailSender e retorna resultados ao UsuarioController para operações de Login,  
-cadastro de usuário, de produto, esqueceu senha, e obter usuário. */
+cadastro de usuário, esqueceu senha, e obter usuário. */
 
 using Controllers.Common;
 using Controllers.Entities;
@@ -89,49 +89,6 @@ namespace Controllers.Services
                 {
                     result.Sucesso = false;
                     result.Mensagem = $"Não foi possível inserir o usuário.";
-                }
-            }
-
-            return result;
-        }
-
-        public CadastroProdutoResult CadastroProduto(string NomeProduto, string CodigoProduto, string PrecoProduto,
- string quantidadeEstoque)
-        {
-            var result = new CadastroProdutoResult();
-            var repositorio = new UsuarioRepository(_connectionString);
-            var produto = repositorio.ObterProdutoPorCodigo(CodigoProduto);
-
-            if (produto != null)
-            {
-                // o produto já existe;
-                result.Sucesso = false;
-                result.Mensagem = $"Produto já existe no sistema";
-            }
-            else
-            {
-                // o produto não existe;
-                var user = new Produto
-                {
-                    NomeProduto = NomeProduto,
-                    CodigoProduto = CodigoProduto,
-                    PrecoProduto = PrecoProduto,
-                    QuantidadeEstoque = quantidadeEstoque,
-                    ProdutoGuid = Guid.NewGuid()
-                };
-
-                var affectedRows = repositorio.InserirProduto(user);
-
-                if (affectedRows > 0)
-                {
-                    result.Sucesso = true;
-                    result.ProdutoGuid = user.ProdutoGuid;
-                    result.Mensagem = $"Produto cadastrado com Sucesso!";
-                }
-                else
-                {
-                    result.Sucesso = false;
-                    result.Mensagem = $"Não foi possível inserir o produto.";
                 }
             }
 
